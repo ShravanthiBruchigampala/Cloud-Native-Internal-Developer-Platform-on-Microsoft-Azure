@@ -1,0 +1,24 @@
+name: Build and Deploy to AKS
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Login to ACR
+      run: az acr login --name myproject
+
+    - name: Build Image
+      run: docker build -t myproject.azurecr.io/myapp:v1 .
+
+    - name: Push Image
+      run: docker push myproject.azurecr.io/myapp:v1
+
+    - name: Deploy to AKS
+      run: kubectl apply -f deployment.yaml
